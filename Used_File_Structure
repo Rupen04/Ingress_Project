@@ -1,0 +1,20 @@
+***File Structure*** :- 
+
+microservices-project/
+│
+├── home-frontend/
+│   ├── index.html
+│   ├── Dockerfile
+│
+├── mobile-frontend/
+│   ├── index.html
+│   ├── Dockerfile
+│
+├── k8s/
+│   ├── home-deploy.yml
+│   ├── home-service.yml
+│   ├── mobile-deploy.yml
+│   ├── mobile-service.yml
+│   ├── ingress.yml
+│
+└── README.md
