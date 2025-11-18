@@ -1,0 +1,102 @@
+*Kubernetes Ingress Controller Microservices Project Documentation*
+
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+Project Overview:
+ [This project demonstrates the deployment of two microservices (Home and Mobile) on AWS EKS, using
+ Docker, Kubernetes, Helm, and NGINX Ingress Controller. The project follows a real DevOps workflow:
+ containerization → deployment → service exposure → ingress routing.]
+
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+ *Module 1 — Docker Image Creation*
+ We created two frontend applications: home and mobile. - Directory structure: 
+ <1> [  mkdir mobile
+        cd mobile
+        mobile.html
+        Dockerfile  ]
+ <2>  [  mkdir home
+         cd home
+         home.html
+         Dockerfile  ]
+
+(Dockerfiles were created for both microservices and images were pushed to Docker Hub.) 
+
+- Commands used: 
+[  docker build -t <dockerhub-user>/home-frontend:1.0 .
+   docker push <dockerhub-user>/home-frontend:1.0
+   docker build -t <dockerhub-user>/mobile-frontend:1.0 .
+   docker push <dockerhub-user>/mobile-frontend:1.0  ]
+
+--------------------------------------------------------------------------------------------------------------------------------
+
+ *Module 2 — Kubernetes YAML Files*
+ We wrote Kubernetes manifests for both microservices.
+
+ Files created:
+• home-deploy.yml
+• home-service.yml
+• mobile-deploy.yml
+• mobile-service.yml
+• ingress.yml
+[ These define: - Deployments - ClusterIP Services - Ingress Rules for /home and /mobile]
+
+---------------------------------------------------------------------------------------------------------------------------------------------
+*Module 3 - Creating AWS EKS Cluster*
+Steps performed: 1. Installed AWS CLI and configured credentials (aws configure). 
+2. Installed IAM Authenticator. 
+3. Created EKS cluster with proper IAM policies. 
+4. Ran: [  aws eks update-kubeconfig to connect CloudShell/EC2 with the EKS cluster.  ] 
+5. Verified cluster: [  kubectl get nodes  ]
+
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+*Execution Steps*
+
+ Step 1 — Apply Kubernetes Resources
+ Applied all deployment and service YAML files: 
+
+  [  kubectl apply -f home-deploy.yml
+     kubectl apply -f home-service.yml
+     kubectl apply -f mobile-deploy.yml
+     kubectl apply -f mobile-service.yml  ]
+
+Checked services using: 
+  [  kubectl get svc  ]
+
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+Step 2 — Install Helm & NGINX Ingress Controller. We installed Helm and used it to deploy the official Kubernetes Ingress-NGINX controller: 
+   
+   [ helm install nginx-ingress ingress-nginx/ingress-nginx   
+    --namespace ingress-nginx   
+    --create-namespace   
+    --set controller.service.type=LoadBalancer ]
+ (This created an AWS LoadBalancer for our ingress)
+
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+Step 3 — Cleanup & Reinstallation (If Needed)
+We sometimes needed to uninstall: 
+[  helm uninstall nginx-ingress -n ingress-nginx  ]
+(Then reinstall using Helm again.)
+
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+Step 4 — Apply Ingress Resource
+Applied ingress file: 
+[  kubectl apply -f ingress.yml  ]
+ Waited 60–90 seconds for the LoadBalancer DNS to update.
+
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+Step 5 — Test Microservices
+We copied the LoadBalancer DNS: 
+[  http://<ELB-DNS>/home
+   http://<ELB-DNS>/mobile  ]
+ Both applications loaded successfully → Project Completed.
+
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+#_This is a complete, production-style Kubernetes microservices project_# :)
