@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: home-deploy
+  labels:
+    app: home-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: home-app
+  template:
+    metadata:
+      labels:
+        app: home-app
+    spec:
+      containers:
+      - name: home-cont
+        image: rupen04/home-frontend:1.0
+        ports:
+        - containerPort: 80
